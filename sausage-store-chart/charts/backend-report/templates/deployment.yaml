@@ -27,7 +27,7 @@ spec:
     spec:
       containers:
         - name: {{ .Chart.Name }}
-          image: vladislavgs/sausage-backend-report:{{ .Values.image_tag }}
+          image: {{ .Values.image }}
           imagePullPolicy: {{ .Values.global.imagePullPolicy }}
           env:
             - name: PORT
@@ -59,8 +59,10 @@ apiVersion: v1
 kind: Secret
 metadata:
   name: {{ .Release.Name }}-{{ .Chart.Name }}-secret
+type: Opaque
 data:
-  env: bW9uZ29kYjovL3JlcG9ydHM6cmVwb3J0c3Bhc3N3b3JkQG1vbmdvZGI6MjcwMTcvc2F1c2FnZS1zdG9yZT9hdXRoU291cmNlPWFkbWlu
+  db: {{ .Values.secret.db | b64enc }}
+  # env: bW9uZ29kYjovL3JlcG9ydHM6cmVwb3J0c3Bhc3N3b3JkQG1vbmdvZGI6MjcwMTcvc2F1c2FnZS1zdG9yZT9hdXRoU291cmNlPWFkbWlu
 ---
 apiVersion: v1
 kind: ConfigMap
