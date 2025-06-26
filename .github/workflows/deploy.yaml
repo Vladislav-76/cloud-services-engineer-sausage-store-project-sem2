@@ -114,10 +114,7 @@ jobs:
           helm upgrade --install sausage-store chartmuseum/sausage-store \
             --version $VERSION \
             --kubeconfig ./kubeconf  \
-            # --set global.vault.name=vault \
-            # --set global.vault.host=$VAULT_HOST \
-            # --set global.vault.vaultToken=$VAULT_TOKEN \
-            # --namespace '${{ secrets.KUBE_NAMESPACE }}' \
+            --namespace '${{ secrets.KUBE_NAMESPACE }}' \
             --set backend_report.image_tag=${{ github.sha }} \
             --set backend.image_tag=${{ github.sha }} \
             --set frontend.image_tag=${{ github.sha }}
