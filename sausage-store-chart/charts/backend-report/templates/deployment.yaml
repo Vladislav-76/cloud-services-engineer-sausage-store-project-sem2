@@ -79,7 +79,7 @@ kind: ConfigMap
 metadata:
   name: {{ .Release.Name }}-{{ .Chart.Name }}-conf
 data:
-  PORT: "8080"
+  PORT: "8081"
 
 
 ---
