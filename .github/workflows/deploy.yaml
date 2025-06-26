@@ -35,7 +35,7 @@ jobs:
           with:
             context: ./backend/
             push: true
-            tags: vladislavgs/sausage-backend:${{ github.sha }}
+            tags: vladislavgs/sausage-backend:latest
             build-args: |
               VERSION=${{ github.sha }}
 
@@ -44,14 +44,14 @@ jobs:
           with:
             context: ./frontend/
             push: true
-            tags: vladislavgs/sausage-frontend:${{ github.sha }}
+            tags: vladislavgs/sausage-frontend:latest
 
         - name: Push Backend-report to DockerHub
           uses: docker/build-push-action@v4
           with:
             context: ./backend-report/
             push: true
-            tags: vladislavgs/sausage-backend-report:${{ github.sha }}
+            tags: vladislavgs/sausage-backend-report:latest
 
   add_helm_chart_to_nexus:
       name: Add Helm Chart To Nexus
