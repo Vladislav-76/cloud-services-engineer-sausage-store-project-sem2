@@ -5,55 +5,64 @@ metadata:
   name: {{ .Release.Name }}-{{ .Chart.Name }}
   namespace: {{ .Release.Namespace }}
   labels:
-    app.kubernetes.io/name: {{ .Chart.Name }}
-    app.kubernetes.io/instance: "{{ .Release.Name }}"
-    app.kubernetes.io/version: "{{ .Chart.AppVersion }}"
-    app.kubernetes.io/managed-by: "{{ .Release.Service }}"
-    helm.sh/chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
-    app.kubernetes.io/component: {{ .Chart.Name }}
-    app.kubernetes.io/part-of: {{ .Release.Name }}
+    app.kubernetes.io/name:        {{ .Chart.Name }}
+    app.kubernetes.io/instance:    "{{ .Release.Name }}"
+    app.kubernetes.io/version:     "{{ .Chart.AppVersion }}"
+    app.kubernetes.io/managed-by:  "{{ .Release.Service }}"
+    helm.sh/chart:                 "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    app.kubernetes.io/component:   {{ .Chart.Name }}
+    app.kubernetes.io/part-of:     {{ .Release.Name }}
+
 spec:
   revisionHistoryLimit: {{ .Values.revisionHistoryLimit }}
-  replicas: {{ .Values.replicas }}
-  strategy:
-{{ toYaml .Values.strategy | indent 4 }} 
+  replicas:             {{ .Values.replicas }}
+
+  strategy: {{- toYaml .Values.strategy | nindent 4 }}
+
   selector:
     matchLabels:
       app: {{ .Release.Name }}-{{ .Chart.Name }}
+
   template:
     metadata:
       labels:
         app: {{ .Release.Name }}-{{ .Chart.Name }}
+
     spec:
       containers:
-        - name: {{ .Chart.Name }}
+        - name:  {{ .Chart.Name }}
           image: {{ .Values.image }}
           imagePullPolicy: {{ .Values.global.imagePullPolicy }}
+
           env:
             - name: PORT
               valueFrom:
                 configMapKeyRef:
                   name: {{ .Release.Name }}-{{ .Chart.Name }}-conf
-                  key: PORT
+                  key:  PORT
             - name: DB
               valueFrom:
                 secretKeyRef:
                   name: {{ .Release.Name }}-{{ .Chart.Name }}-secret
-                  key: env
-          resources:
-{{ toYaml .Values.resources | indent 12 }} 
+                  key:  env
+
+          resources: {{- toYaml .Values.resources | nindent 12 }}
+
           ports:
-            - name: {{ .Chart.Name }}
+            - name:          {{ .Chart.Name }}
               containerPort: {{ .Values.containerPort }}
-          livenessProbe:
-{{ toYaml .Values.livenessProbe | indent 12 }} 
+
+          livenessProbe: {{- toYaml .Values.livenessProbe | nindent 12 }}
+
       volumes:
-      - name: {{ .Release.Name }}-{{ .Chart.Name }}-conf
-        configMap:
-          name: {{ .Release.Name }}-{{ .Chart.Name }}-conf
-          items:
-            - key: PORT
-              path: PORT
+        - name: {{ .Release.Name }}-{{ .Chart.Name }}-conf
+          configMap:
+            name: {{ .Release.Name }}-{{ .Chart.Name }}-conf
+            items:
+              - key:  PORT
+                path: PORT
+
+
 ---
 apiVersion: v1
 kind: Secret
@@ -62,6 +71,8 @@ metadata:
 type: Opaque
 data:
   db: {{ .Values.secret.db | b64enc }}
+
+
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -69,6 +80,8 @@ metadata:
   name: {{ .Release.Name }}-{{ .Chart.Name }}-conf
 data:
   PORT: "8080"
+
+
 ---
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
@@ -77,14 +90,16 @@ metadata:
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
-    kind: Deployment
-    name: {{ .Release.Name }}-{{ .Chart.Name }}
+    kind:       Deployment
+    name:       {{ .Release.Name }}-{{ .Chart.Name }}
+
   minReplicas: {{ .Values.hpa.minReplicas }}
   maxReplicas: {{ .Values.hpa.maxReplicas }}
+
   metrics:
-  - type: Resource
-    resource:
-      name: cpu
-      target:
-        type: Utilization
-        averageUtilization: {{ .Values.hpa.averageUtilization }}
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type:               Utilization
+          averageUtilization: {{ .Values.hpa.averageUtilization }}
